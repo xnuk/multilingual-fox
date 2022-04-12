@@ -1,45 +1,24 @@
-import request from 'request';
-import cheerio from 'cheerio';
+import type { Scraper } from '../models';
+import { Range, fromRanges } from '../range';
+import { origin } from '../utils';
+import { naverQuery } from './naver';
 
-import Tooltip from '../Tooltip';
-import Scraper from './Scraper';
-import { Selector } from '../models';
+const baseUrl = 'https://dict.naver.com/api3/zhko/search';
 
-class ZhDictNaver extends Scraper {
-  static baseUrl: string = 'https://zh.dict.naver.com/mini/search/all?q=';
-
-  static load(word: string) {
-    const url = `${this.baseUrl}${word}`;
-    let index: number = 1;
-
-    request(url, (err, res, body) => {
-      const $: CheerioStatic = cheerio.load(body);
-      const baseSelector: string = '.word_result > dl';
-
-      do {
-        const selector: Selector = {
-          title: `dt:nth-child(${index}) > a`,
-          pronounce: `dt:nth-child(${index}) > span.py`,
-          description: [`dt:nth-child(${index}) + dd > ol`],
-        };
-
-        this.content.title = $(`${baseSelector} > ${selector.title}`).html();
-        if (!this.content.title) {
-          if (index === 1) {
-            Tooltip.addNoResultDOM();
-          }
-          break;
-        }
-
-        this.content.pronounce = $(`${baseSelector} > ${selector.pronounce}`).text();
-        this.content.description = $(`${baseSelector} > ${selector.description[0]}`).text();
-
-        Tooltip.addContentDOM(this.content);
-
-        index += 2;
-      } while (this.content.title);
-    });
-  }
-}
-
-export { ZhDictNaver };
+export const Scrap: Scraper = {
+  languageTest: fromRanges([
+    Range(0x4e00, 0x9fff),
+    Range(0x3400, 0x4dbf),
+    Range(0x20000, 0x2a6df),
+    Range(0x2a700, 0x2b73f),
+    Range(0x2b740, 0x2b81f),
+    Range(0x2b820, 0x2ceaf),
+    Range(0xf900, 0xfaff),
+    Range(0x3300, 0x33ff),
+    Range(0xfe30, 0xfe4f),
+    Range(0xf900, 0xfaff),
+    Range(0x2f800, 0x2fa1f),
+  ]),
+  urlOrigins: [origin(baseUrl)],
+  query: naverQuery(baseUrl),
+};

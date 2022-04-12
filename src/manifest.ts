@@ -11,7 +11,12 @@ export const manifest = {
     '96': 'icons/icon-96.png',
     '128': 'icons/icon-128.png',
   },
-  permissions: origins.map((path) => path + '/*'),
+
+  permissions: origins
+    .map((path) => path + '/*')
+    .sort()
+    .filter((curr, index, arr) => arr[index - 1] !== curr),
+
   content_scripts: [
     {
       matches: ['<all_urls>'],
