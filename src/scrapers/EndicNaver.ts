@@ -2,7 +2,7 @@ import type { Scraper } from '../models';
 import { charRange, fromRanges } from '../range';
 import { origin } from '../utils';
 
-const baseUrl = 'https://en.dict.naver.com/api3/enko/search';
+const baseUrl = 'https://dict.naver.com/api3/enko/search';
 
 type ResponseData =
   | typeof import('../samples/en.1.json')
