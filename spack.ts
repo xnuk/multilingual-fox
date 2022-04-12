@@ -69,7 +69,8 @@ const main = async () => {
 
   const buffer = await zip.generateAsync({
     type: 'nodebuffer',
-    compression: 'STORE',
+    compression: 'DEFLATE',
+    compressionOptions: { level: 9 },
   });
 
   await writeFile(resolve('./dist.zip'), buffer);
